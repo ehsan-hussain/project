@@ -1,5 +1,7 @@
-import React from 'react';
-import { View, FlatList, StyleSheet, Text,StatusBar, Button} from 'react-native';
+
+
+import React, { useState } from 'react';
+import { View, FlatList, StyleSheet, Text, StatusBar, Button, TextInput } from 'react-native';
 
 const DATA = [
   {
@@ -23,13 +25,13 @@ const DATA = [
     brand: 'Puma',
     type: 'Casual',
   },
-  {  id: '58694a0f-3da1-471f-bd96-145571e29d75',
-  title: 'Fourth Item',
-  price: 29.99,
-  brand: 'Reebok',
-  type: 'Football',
-
-  }
+  {
+    id: '58694a0f-3da1-471f-bd96-145571e29d75',
+    title: 'Fourth Item',
+    price: 29.99,
+    brand: 'Reebok',
+    type: 'Football',
+  },
 ];
 
 const styles = StyleSheet.create({
@@ -49,21 +51,78 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
 export default function DisplayPage() {
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editedProduct, setEditedProduct] = useState(null);
+
+  const onEditPressHandler = (index, product) => {
+    setEditingIndex(index);
+    setEditedProduct({ ...product });
+  };
+
+  const onSavePressHandler = (index) => {
+  
+    const newData = [...DATA];
+    newData[index] = editedProduct;
+    
+
+    setEditingIndex(null);
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         data={DATA}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <View style={styles.item}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text>Price: ${item.price}</Text>
-            <Text>Brand: {item.brand}</Text>
-            <Text>Type: {item.type}</Text>
-            <Button title='Redigera' onPress={()=>alert("välkommen")}></Button>
-            <Button title='Radera'></Button>
+            {editingIndex === index ? (
+              <View>
+                <TextInput
+                  value={editedProduct.title}
+                  onChangeText={(text) =>
+                    setEditedProduct({ ...editedProduct, title: text })
+                  }
+                  autoFocus
+                />
+                <TextInput
+                  value={String(editedProduct.price)}
+                  onChangeText={(text) =>
+                    setEditedProduct({
+                      ...editedProduct,
+                      price: parseFloat(text),
+                    })
+                  }
+                />
+                <TextInput
+                  value={editedProduct.brand}
+                  onChangeText={(text) =>
+                    setEditedProduct({ ...editedProduct, brand: text })
+                  }
+                />
+                <TextInput
+                  value={editedProduct.type}
+                  onChangeText={(text) =>
+                    setEditedProduct({ ...editedProduct, type: text })
+                  }
+                />
+                <Button
+                  title="Spara"
+                  onPress={() => onSavePressHandler(index)}
+                />
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text>Price: ${item.price}</Text>
+                <Text>Brand: {item.brand}</Text>
+                <Text>Type: {item.type}</Text>
+                <Button
+                  title="Redigera"
+                  onPress={() => onEditPressHandler(index, item)}
+                />
+                <Button title="Radera" />
+              </View>
+            )}
           </View>
         )}
         keyExtractor={item => item.id}
@@ -71,9 +130,3 @@ export default function DisplayPage() {
     </View>
   );
 }
-
-const andra = ()=> {
-    return(
-        console.log(item.price)
-    )
-};
