@@ -1,9 +1,7 @@
-
-
 import React, { useState } from 'react';
 import { View, FlatList, StyleSheet, Text, StatusBar, Button, TextInput } from 'react-native';
 
-const DATA = [
+const initialData = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
     title: 'First Item',
@@ -52,8 +50,9 @@ const styles = StyleSheet.create({
 });
 
 export default function DisplayPage() {
+  const [data, setData] = useState(initialData);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [editedProduct, setEditedProduct] = useState(null);
+  const [editedProduct, setEditedProduct] = useState({});
 
   const onEditPressHandler = (index, product) => {
     setEditingIndex(index);
@@ -61,18 +60,18 @@ export default function DisplayPage() {
   };
 
   const onSavePressHandler = (index) => {
-  
-    const newData = [...DATA];
+    const newData = [...data];
     newData[index] = editedProduct;
-    
 
+    setData(newData);
     setEditingIndex(null);
+    setEditedProduct({});
   };
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={DATA}
+        data={data}
         renderItem={({ item, index }) => (
           <View style={styles.item}>
             {editingIndex === index ? (
